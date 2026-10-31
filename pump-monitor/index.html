@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MVP Контроль насоса</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-annotation@3.0.1/dist/chartjs-plugin-annotation.min.js"></script>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🔧 MVP Контроль насоса</h1>
+            <div class="file-selector">
+                <label for="fileSelect">Выберите файл:</label>
+                <select id="fileSelect">
+                    <option value="01_small.json">01_small.json</option>
+                    <option value="02_boundaries.json">02_boundaries.json</option>
+                    <option value="03_gap_20min.json">03_gap_20min.json</option>
+                    <option value="04_invalid_values.json">04_invalid_values.json</option>
+                    <option value="05_long_record.json">05_long_record.json</option>
+                    <option value="06_empty.json">06_empty.json</option>
+                    <option value="07_single_point.json">07_single_point.json</option>
+                    <option value="08_missing_rpm.json">08_missing_rpm.json</option>
+                    <option value="09_wrong_type.json">09_wrong_type.json</option>
+                    <option value="10_duplicate_time.json">10_duplicate_time.json</option>
+                </select>
+            </div>
+        </header>
+
+        <div id="errorBox" class="error-box hidden"></div>
+
+        <div class="metrics-grid">
+            <div class="metric-card">
+                <div class="metric-label">Всего (span)</div>
+                <div class="metric-value" id="span_s">0</div>
+                <div class="metric-unit">сек</div>
+            </div>
+            <div class="metric-card working">
+                <div class="metric-label">Работа</div>
+                <div class="metric-value" id="working_s">0</div>
+                <div class="metric-unit">сек</div>
+            </div>
+            <div class="metric-card stopped">
+                <div class="metric-label">Остановка</div>
+                <div class="metric-value" id="stopped_s">0</div>
+                <div class="metric-unit">сек</div>
+            </div>
+            <div class="metric-card gap">
+                <div class="metric-label">Пропуск</div>
+                <div class="metric-value" id="gap_s">0</div>
+                <div class="metric-unit">сек</div>
+            </div>
+            <div class="metric-card invalid">
+                <div class="metric-label">Недостоверные</div>
+                <div class="metric-value" id="invalid_s">0</div>
+                <div class="metric-unit">сек</div>
+            </div>
+            <div class="metric-card unknown">
+                <div class="metric-label">Неизвестно</div>
+                <div class="metric-value" id="unknown_s">0</div>
+                <div class="metric-unit">сек</div>
+            </div>
+        </div>
+
+        <div class="modes-grid">
+            <h3>Режимы работы</h3>
+            <div class="mode-card low">
+                <div class="mode-label">Low (1-5 МПа)</div>
+                <div class="mode-value" id="low_s">0</div>
+            </div>
+            <div class="mode-card normal">
+                <div class="mode-label">Normal (5-10 МПа)</div>
+                <div class="mode-value" id="normal_s">0</div>
+            </div>
+            <div class="mode-card high">
+                <div class="mode-label">High (≥10 МПа)</div>
+                <div class="mode-value" id="high_s">0</div>
+            </div>
+            <div class="mode-card deviation">
+                <div class="mode-label">⚠️ С отклонением</div>
+                <div class="mode-value" id="deviation_s">0</div>
+            </div>
+        </div>
+
+        <div class="chart-container">
+            <canvas id="mainChart"></canvas>
+        </div>
+
+        <div class="info-box">
+            <h4>Легенда графика:</h4>
+            <div class="legend-item">
+                <span class="legend-color" style="background: #2196F3;"></span>
+                <span>Давление (МПа) — левая ось</span>
+            </div>
+            <div class="legend-item">
+                <span class="legend-color" style="background: #FF9800;"></span>
+                <span>Обороты (RPM) — правая ось</span>
+            </div>
+            <div class="legend-item">
+                <span class="legend-color" style="background: rgba(76, 175, 80, 0.2);"></span>
+                <span>Работа</span>
+            </div>
+            <div class="legend-item">
+                <span class="legend-color" style="background: rgba(244, 67, 54, 0.2);"></span>
+                <span>Недостоверные данные</span>
+            </div>
+            <div class="legend-item">
+                <span class="legend-color" style="background: rgba(158, 158, 158, 0.2);"></span>
+                <span>Пропуск / Остановка</span>
+            </div>
+        </div>
+    </div>
+
+    <script src="js/validator.js"></script>
+    <script src="js/calculator.js"></script>
+    <script src="js/app.js"></script>
+</body>
+</html>
