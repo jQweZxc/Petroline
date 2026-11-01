@@ -168,9 +168,31 @@ function buildChart(samples, intervals) {
     });
 }
 
+// Показать информационное сообщение
+function showInfo(message) {
+    const infoBox = document.createElement('div');
+    infoBox.className = 'info-message';
+    infoBox.textContent = message;
+    
+    // Удаляем старое сообщение если есть
+    const oldInfo = document.querySelector('.info-message');
+    if (oldInfo) oldInfo.remove();
+    
+    // Вставляем перед графиком
+    const chartContainer = document.querySelector('.chart-container');
+    chartContainer.parentNode.insertBefore(infoBox, chartContainer);
+}
+
+// Удалить информационное сообщение
+function hideInfo() {
+    const info = document.querySelector('.info-message');
+    if (info) info.remove();
+}
+
 // Основная функция обработки
 async function processFile(filename) {
     hideError();
+    hideInfo();
     
     const data = await loadFile(filename);
     if (!data) return;
@@ -186,10 +208,25 @@ async function processFile(filename) {
     const metrics = calculator.calculate(data.samples);
     updateMetrics(metrics);
 
-    // Построение графика
-    if (data.samples.length > 0) {
-        buildChart(data.samples, metrics.intervals);
+    // Проверка на пустые данные
+    if (data.samples.length === 0) {
+        showInfo('ℹ️ Файл пустой — нет данных для анализа');
+        if (chart) {
+            chart.destroy();
+            chart = null;
+        }
+        return;
     }
+
+    if (data.samples.length === 1) {
+        showInfo('ℹ️ Только одна точка — недостаточно данных для расчёта интервалов');
+        // Рисуем точку на графике
+        buildChart(data.samples, metrics.intervals);
+        return;
+    }
+
+    // Построение графика
+    buildChart(data.samples, metrics.intervals);
 }
 
 // Инициализация
