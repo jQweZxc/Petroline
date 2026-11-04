@@ -189,13 +189,10 @@ function hideInfo() {
     if (info) info.remove();
 }
 
-// Основная функция обработки
-async function processFile(filename) {
+// Обработка уже прочитанных данных: валидация, расчёт, отрисовка
+function processData(data) {
     hideError();
     hideInfo();
-    
-    const data = await loadFile(filename);
-    if (!data) return;
 
     // Валидация
     const validation = validator.validate(data);
@@ -229,17 +226,68 @@ async function processFile(filename) {
     buildChart(data.samples, metrics.intervals);
 }
 
+// Обработка демо-файла из папки data (нужен запуск через сервер)
+async function processFile(filename) {
+    hideError();
+    hideInfo();
+
+    const data = await loadFile(filename);
+    if (!data) return;
+
+    processData(data);
+}
+
+// Чтение файла, выбранного пользователем (работает без сервера и без интернета)
+function readLocalFile(file) {
+    const reader = new FileReader();
+
+    reader.onload = () => {
+        let data;
+        try {
+            // Убираем BOM, который добавляют некоторые редакторы в Windows
+            data = JSON.parse(String(reader.result).replace(/^\uFEFF/, ''));
+        } catch (error) {
+            hideInfo();
+            showError(`Файл «${file.name}» не является корректным JSON: ${error.message}`);
+            return;
+        }
+        processData(data);
+    };
+
+    reader.onerror = () => {
+        hideInfo();
+        showError(`Не удалось прочитать файл «${file.name}»`);
+    };
+
+    reader.readAsText(file, 'UTF-8');
+}
+
 // Инициализация
 document.addEventListener('DOMContentLoaded', () => {
     const fileSelect = document.getElementById('fileSelect');
-    
-    fileSelect.addEventListener('change', (e) => {
-        processFile(e.target.value);
+    const fileUpload = document.getElementById('fileUpload');
+    const demoSelector = document.getElementById('demoSelector');
+
+    // Загрузка своего файла
+    fileUpload.addEventListener('change', (e) => {
+        const file = e.target.files[0];
+        if (file) readLocalFile(file);
     });
 
-    // Загрузка первого файла по умолчанию
-    processFile(fileSelect.value);
+    // Демо-файлы читаются через fetch, а он не работает при открытии index.html двойным кликом (file://)
+    if (location.protocol === 'file:') {
+        demoSelector.classList.add('hidden');
+        showInfo('ℹ️ Выберите JSON-файл кнопкой «Свой файл» — расчёт и график появятся сразу');
+    } else {
+        fileSelect.addEventListener('change', (e) => {
+            processFile(e.target.value);
+        });
+
+        // Загрузка первого файла по умолчанию
+        processFile(fileSelect.value);
+    }
+
     // Отладка
-console.log('Chart.js загружен:', typeof Chart !== 'undefined');
-console.log('Canvas найден:', document.getElementById('mainChart') !== null);
+    console.log('Chart.js загружен:', typeof Chart !== 'undefined');
+    console.log('Canvas найден:', document.getElementById('mainChart') !== null);
 });

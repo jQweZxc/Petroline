@@ -4,28 +4,44 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>MVP Контроль насоса</title>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-annotation@3.0.1/dist/chartjs-plugin-annotation.min.js"></script>
+    <!-- Сначала локальные копии библиотек (работает без интернета). -->
+    <script src="lib/chart.umd.min.js"></script>
+    <script src="lib/chartjs-plugin-annotation.min.js"></script>
+    <script>
+        // Если папки lib/ нет или в ней пусто, подгружаем библиотеки с CDN (нужен интернет).
+        if (typeof Chart === 'undefined') {
+            document.write('<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"><\/script>');
+        }
+        if (!window['chartjs-plugin-annotation']) {
+            document.write('<script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-annotation@3.0.1/dist/chartjs-plugin-annotation.min.js"><\/script>');
+        }
+    </script>
     <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
     <div class="container">
         <header>
             <h1>🔧 MVP Контроль насоса</h1>
-            <div class="file-selector">
-                <label for="fileSelect">Выберите файл:</label>
-                <select id="fileSelect">
-                    <option value="01_small.json">01_small.json</option>
-                    <option value="02_boundaries.json">02_boundaries.json</option>
-                    <option value="03_gap_20min.json">03_gap_20min.json</option>
-                    <option value="04_invalid_values.json">04_invalid_values.json</option>
-                    <option value="05_long_record.json">05_long_record.json</option>
-                    <option value="06_empty.json">06_empty.json</option>
-                    <option value="07_single_point.json">07_single_point.json</option>
-                    <option value="08_missing_rpm.json">08_missing_rpm.json</option>
-                    <option value="09_wrong_type.json">09_wrong_type.json</option>
-                    <option value="10_duplicate_time.json">10_duplicate_time.json</option>
-                </select>
+            <div class="file-controls">
+                <div class="file-selector" id="demoSelector">
+                    <label for="fileSelect">Демо-файл:</label>
+                    <select id="fileSelect">
+                        <option value="01_small.json">01_small.json</option>
+                        <option value="02_boundaries.json">02_boundaries.json</option>
+                        <option value="03_gap_20min.json">03_gap_20min.json</option>
+                        <option value="04_invalid_values.json">04_invalid_values.json</option>
+                        <option value="05_long_record.json">05_long_record.json</option>
+                        <option value="06_empty.json">06_empty.json</option>
+                        <option value="07_single_point.json">07_single_point.json</option>
+                        <option value="08_missing_rpm.json">08_missing_rpm.json</option>
+                        <option value="09_wrong_type.json">09_wrong_type.json</option>
+                        <option value="10_duplicate_time.json">10_duplicate_time.json</option>
+                    </select>
+                </div>
+                <div class="file-selector">
+                    <label for="fileUpload">Свой файл (.json):</label>
+                    <input type="file" id="fileUpload" accept=".json,application/json">
+                </div>
             </div>
         </header>
 

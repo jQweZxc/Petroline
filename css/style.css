@@ -33,6 +33,12 @@ h1 {
     font-size: 28px;
 }
 
+.file-controls {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+}
+
 .file-selector {
     display: flex;
     align-items: center;
@@ -51,6 +57,15 @@ h1 {
     font-size: 14px;
     cursor: pointer;
     transition: border-color 0.3s;
+}
+
+.file-selector input[type="file"] {
+    font-size: 14px;
+    max-width: 260px;
+}
+
+.file-selector.hidden {
+    display: none;
 }
 
 .file-selector select:hover {
